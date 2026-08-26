@@ -6,7 +6,7 @@ name: Build iOS Graal JDK 25
       release_version:
         description: Version to attach to the downloadable workflow artifact.
         required: true
-        default: 25.0.4-ios.1
+        default: jdk25
         type: string
   push:
     tags:
@@ -31,9 +31,17 @@ jobs:
         id: source-revisions
         run: echo "key=$(git submodule status | shasum -a 256 | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
 
+      # Read from toolchain.env so the GraalVM here cannot drift from the one the
+      # static libraries and the CAP cache are built against.
+      - name: Read toolchain versions
+        id: toolchain
+        run: |
+          . ./toolchain.env
+          echo "graalvm=$GRAALVM_VERSION" >> "$GITHUB_OUTPUT"
+
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: 25.0.4
+          version: ${{ steps.toolchain.outputs.graalvm }}
           distribution: graalvm
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: gradle
@@ -43,8 +51,8 @@ jobs:
         with:
           path: |
             labs-openjdk/labs-openjdk-25/build/labsjdk
-            labs-openjdk/svm.openjdk.xcodeproj/build
-            svm/svm.graal.xcodeproj/build
+            labs-openjdk/build/xcode
+            svm/build/xcode
             cap-cache-generator/.gradle
             cap-cache-generator/build/cap-cache
           key: ios-graal-native-image-${{ runner.os }}-${{ runner.arch }}-${{ steps.source-revisions.outputs.key }}-${{ hashFiles('toolchain.env', 'labs-openjdk/ios-jdk.patch', 'labs-openjdk/svm.openjdk.xcodeproj/project.pbxproj', 'svm/svm.graal.xcodeproj/project.pbxproj', 'cap-cache-generator/*.kts', 'cap-cache-generator/gradle/wrapper/gradle-wrapper.properties') }}
@@ -76,4 +84,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_VERSION: ${{ github.ref_name }}
-        run: gh release create "$RELEASE_VERSION" "dist/ios-graal-jdk-$RELEASE_VERSION.zip" --title "$RELEASE_VERSION"
+        run: gh release create "$RELEASE_VERSION" "dist/ios-graal-$RELEASE_VERSION.zip" --title "$RELEASE_VERSION"

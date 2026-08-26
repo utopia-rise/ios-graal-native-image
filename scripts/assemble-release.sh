@@ -6,7 +6,7 @@ root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$root_dir/toolchain.env"
 : "${RELEASE_VERSION:=$DEFAULT_RELEASE_VERSION}"
 dist_dir="$root_dir/dist"
-bundle_name="ios-graal-jdk-$RELEASE_VERSION.zip"
+bundle_name="ios-graal-$RELEASE_VERSION.zip"
 bundle_dir="$dist_dir/bundle"
 rm -rf "$dist_dir"
 mkdir -p "$bundle_dir/caps"
@@ -24,8 +24,29 @@ copy_archive() {
   cp "$source" "$bundle_dir/$target_name"
 }
 
-copy_archive "$root_dir/labs-openjdk/svm.openjdk.xcodeproj/build" libjava.a libjava-release.a
-copy_archive "$root_dir/svm/svm.graal.xcodeproj/build" libjvm.a libjvm-release.a
+# Both projects set SYMROOT to build/xcode next to the project, and
+# CONFIGURATION_BUILD_DIR to <configuration>-<platform> below it. Point at that
+# directory rather than the whole tree so the intermediate archive under
+# *.build/Objects-normal cannot be picked instead of the finished product.
+for configuration in release debug; do
+  products="$(tr '[:lower:]' '[:upper:]' <<< "${configuration:0:1}")${configuration:1}-ios-iphoneos"
+  copy_archive "$root_dir/labs-openjdk/build/xcode/$products" libjava.a "libjava-$configuration.a"
+  copy_archive "$root_dir/svm/build/xcode/$products" libjvm.a "libjvm-$configuration.a"
+done
+archives=(libjava-release.a libjvm-release.a libjava-debug.a libjvm-debug.a)
+
+# Debug info would embed this machine's absolute paths, which a consumer's
+# linker then reports as warnings for files it cannot open. Fail loudly instead
+# of shipping them, so the release build cannot regress into leaking paths. The
+# debug archives carry debug info by definition, so they are exempt.
+for archive in libjava-release.a libjvm-release.a; do
+  leaked="$(LC_ALL=C grep -a -o -E '/Users/[A-Za-z0-9._-]+/[^ ]*' "$bundle_dir/$archive" | head -3 || true)"
+  if [[ -n "$leaked" ]]; then
+    echo "$archive embeds absolute build paths:" >&2
+    printf '  %s\n' $leaked >&2
+    exit 1
+  fi
+done
 
 cap_dir="$root_dir/cap-cache-generator/build/cap-cache"
 cap_files=()
@@ -44,7 +65,7 @@ done
 
 printf '%s\n' "${cap_files[@]}" > "$bundle_dir/caps/cap-cache-files.txt"
 
-artifact_names=(libjava-release.a libjvm-release.a)
+artifact_names=("${archives[@]}")
 for cap_file in "${cap_files[@]}"; do
   artifact_names+=("caps/$cap_file")
 done
@@ -54,9 +75,14 @@ for artifact_name in "${artifact_names[@]}"; do
 done
 artifact_json="${artifact_json%, }"
 
+checksum_targets=("${archives[@]}" caps/cap-cache-files.txt)
+for cap_file in "${cap_files[@]}"; do
+  checksum_targets+=("caps/$cap_file")
+done
+
 (
   cd "$bundle_dir"
-  shasum -a 256 libjava-release.a libjvm-release.a caps/cap-cache-files.txt "${artifact_names[@]:2}" > SHA256SUMS
+  shasum -a 256 "${checksum_targets[@]}" > SHA256SUMS
 )
 
 cat > "$bundle_dir/manifest.json" <<EOF
@@ -74,6 +100,6 @@ EOF
 
 (
   cd "$bundle_dir"
-  zip -X -q -r "$dist_dir/$bundle_name" libjava-release.a libjvm-release.a caps SHA256SUMS manifest.json
+  zip -X -q -r "$dist_dir/$bundle_name" "${archives[@]}" caps SHA256SUMS manifest.json
 )
 rm -rf "$bundle_dir"

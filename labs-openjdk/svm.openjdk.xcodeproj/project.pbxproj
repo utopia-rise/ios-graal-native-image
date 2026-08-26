@@ -62,7 +62,6 @@
 		5A1152162615EDE000E59D56 /* Class.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A11F6B92615ED8300E59D56 /* Class.c */; };
 		5A1152172615EDE000E59D56 /* Array.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A11F6BA2615ED8300E59D56 /* Array.c */; };
 		5A1152192615EDE000E59D56 /* VM.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A11F6BF2615ED8300E59D56 /* VM.c */; };
-		5A11521A2615EDE000E59D56 /* AccessController.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A11F6C02615ED8300E59D56 /* AccessController.c */; };
 		5A11521B2615EDE000E59D56 /* Module.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A11F6C12615ED8300E59D56 /* Module.c */; };
 		5A11521C2615EDE000E59D56 /* StackTraceElement.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A11F6C22615ED8300E59D56 /* StackTraceElement.c */; };
 		5A11521D2615EDE000E59D56 /* Reference.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A11F6C32615ED8300E59D56 /* Reference.c */; };
@@ -84,7 +83,6 @@
 		5A11522F2615EDE100E59D56 /* ConstantPool.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A11F6D82615ED8300E59D56 /* ConstantPool.c */; };
 		5A1152302615EDE100E59D56 /* io_util.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A11F6D92615ED8300E59D56 /* io_util.c */; };
 		5A1152312615EDE100E59D56 /* check_version.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A11F6DA2615ED8300E59D56 /* check_version.c */; settings = {COMPILER_FLAGS = "-DLIBRARY_NAME=java"; }; };
-		5A1152322615EDE100E59D56 /* SecurityManager.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A11F6DB2615ED8300E59D56 /* SecurityManager.c */; };
 		5A1152332615EDE100E59D56 /* VMSupport.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A11F6DC2615ED8300E59D56 /* VMSupport.c */; };
 		5A1152352615EDE100E59D56 /* RandomAccessFile.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A11F6DE2615ED8300E59D56 /* RandomAccessFile.c */; };
 		5A1152372615EDE100E59D56 /* Inflater.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A11F6E12615ED8300E59D56 /* Inflater.c */; };
@@ -120,6 +118,8 @@
 		F036E6B82BC68E4700A78829 /* NativeSocketAddress.c in Sources */ = {isa = PBXBuildFile; fileRef = F036E6B72BC68E4700A78829 /* NativeSocketAddress.c */; };
 		F036E6F02BC68E9F00A78829 /* MacOSXPreferencesFile.m in Sources */ = {isa = PBXBuildFile; fileRef = F036E6C22BC68E9F00A78829 /* MacOSXPreferencesFile.m */; settings = {COMPILER_FLAGS = "-DLIBRARY_NAME=prefs"; }; };
 		F036E7072BC694C800A78829 /* VirtualThread.c in Sources */ = {isa = PBXBuildFile; fileRef = F036E7062BC694C800A78829 /* VirtualThread.c */; };
+		F0A1E5010000000000000002 /* ThreadSnapshot.c in Sources */ = {isa = PBXBuildFile; fileRef = F0A1E5020000000000000002 /* ThreadSnapshot.c */; };
+		F0A1E5010000000000000001 /* StackFrameInfo.c in Sources */ = {isa = PBXBuildFile; fileRef = F0A1E5020000000000000001 /* StackFrameInfo.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -219,7 +219,6 @@
 		5A11F6BC2615ED8300E59D56 /* java_props.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = java_props.h; sourceTree = "<group>"; };
 		5A11F6BE2615ED8300E59D56 /* io_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = io_util.h; sourceTree = "<group>"; };
 		5A11F6BF2615ED8300E59D56 /* VM.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = VM.c; sourceTree = "<group>"; };
-		5A11F6C02615ED8300E59D56 /* AccessController.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AccessController.c; sourceTree = "<group>"; };
 		5A11F6C12615ED8300E59D56 /* Module.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Module.c; sourceTree = "<group>"; };
 		5A11F6C22615ED8300E59D56 /* StackTraceElement.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = StackTraceElement.c; sourceTree = "<group>"; };
 		5A11F6C32615ED8300E59D56 /* Reference.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Reference.c; sourceTree = "<group>"; };
@@ -244,7 +243,6 @@
 		5A11F6D82615ED8300E59D56 /* ConstantPool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ConstantPool.c; sourceTree = "<group>"; };
 		5A11F6D92615ED8300E59D56 /* io_util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = io_util.c; sourceTree = "<group>"; };
 		5A11F6DA2615ED8300E59D56 /* check_version.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = check_version.c; sourceTree = "<group>"; };
-		5A11F6DB2615ED8300E59D56 /* SecurityManager.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SecurityManager.c; sourceTree = "<group>"; };
 		5A11F6DC2615ED8300E59D56 /* VMSupport.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = VMSupport.c; sourceTree = "<group>"; };
 		5A11F6DE2615ED8300E59D56 /* RandomAccessFile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = RandomAccessFile.c; sourceTree = "<group>"; };
 		5A11F6E12615ED8300E59D56 /* Inflater.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Inflater.c; sourceTree = "<group>"; };
@@ -282,6 +280,8 @@
 		F036E6B72BC68E4700A78829 /* NativeSocketAddress.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NativeSocketAddress.c; sourceTree = "<group>"; };
 		F036E6C22BC68E9F00A78829 /* MacOSXPreferencesFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MacOSXPreferencesFile.m; sourceTree = "<group>"; };
 		F036E7062BC694C800A78829 /* VirtualThread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = VirtualThread.c; sourceTree = "<group>"; };
+		F0A1E5020000000000000002 /* ThreadSnapshot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ThreadSnapshot.c; sourceTree = "<group>"; };
+		F0A1E5020000000000000001 /* StackFrameInfo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = StackFrameInfo.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -641,6 +641,8 @@
 			isa = PBXGroup;
 			children = (
 				F036E7062BC694C800A78829 /* VirtualThread.c */,
+				F0A1E5020000000000000002 /* ThreadSnapshot.c */,
+				F0A1E5020000000000000001 /* StackFrameInfo.c */,
 				F036E6A32BC68E2900A78829 /* CDS.c */,
 				F036E6A22BC68E2900A78829 /* check_classname.c */,
 				F036E6A12BC68E2900A78829 /* check_classname.h */,
@@ -668,7 +670,6 @@
 				5A11F6BC2615ED8300E59D56 /* java_props.h */,
 				5A11F6BE2615ED8300E59D56 /* io_util.h */,
 				5A11F6BF2615ED8300E59D56 /* VM.c */,
-				5A11F6C02615ED8300E59D56 /* AccessController.c */,
 				5A11F6C12615ED8300E59D56 /* Module.c */,
 				5A11F6C22615ED8300E59D56 /* StackTraceElement.c */,
 				5A11F6C32615ED8300E59D56 /* Reference.c */,
@@ -693,7 +694,6 @@
 				5A11F6D82615ED8300E59D56 /* ConstantPool.c */,
 				5A11F6D92615ED8300E59D56 /* io_util.c */,
 				5A11F6DA2615ED8300E59D56 /* check_version.c */,
-				5A11F6DB2615ED8300E59D56 /* SecurityManager.c */,
 				5A11F6DC2615ED8300E59D56 /* VMSupport.c */,
 				5A11F6DE2615ED8300E59D56 /* RandomAccessFile.c */,
 			);
@@ -858,7 +858,6 @@
 				5A1150EB2615EDDC00E59D56 /* HostLocaleProviderAdapter_md.c in Sources */,
 				F036E6AC2BC68E2900A78829 /* RawNativeLibraries.c in Sources */,
 				5A11522F2615EDE100E59D56 /* ConstantPool.c in Sources */,
-				5A1152322615EDE100E59D56 /* SecurityManager.c in Sources */,
 				5A11521F2615EDE000E59D56 /* ObjectStreamClass.c in Sources */,
 				5A1152122615EDE000E59D56 /* StackStreamFactory.c in Sources */,
 				F036E68B2BC68D8D00A78829 /* path_util.c in Sources */,
@@ -878,7 +877,6 @@
 				5A11520D2615EDE000E59D56 /* Throwable.c in Sources */,
 				F036E6B82BC68E4700A78829 /* NativeSocketAddress.c in Sources */,
 				5A1152222615EDE000E59D56 /* jio.c in Sources */,
-				5A11521A2615EDE000E59D56 /* AccessController.c in Sources */,
 				5A11507E2615EDDB00E59D56 /* net_util_md.c in Sources */,
 				F036E6A92BC68E2900A78829 /* ContinuationSupport.c in Sources */,
 				5A1150A42615EDDB00E59D56 /* UnixAsynchronousSocketChannelImpl.c in Sources */,
@@ -899,6 +897,8 @@
 				F036E6AA2BC68E2900A78829 /* Continuation.c in Sources */,
 				5A1152022615EDE000E59D56 /* Inet4Address.c in Sources */,
 				F036E7072BC694C800A78829 /* VirtualThread.c in Sources */,
+				F0A1E5010000000000000002 /* ThreadSnapshot.c in Sources */,
+				F0A1E5010000000000000001 /* StackFrameInfo.c in Sources */,
 				F036E6B62BC68E2900A78829 /* PreviewFeatures.c in Sources */,
 				5A1150A02615EDDB00E59D56 /* FileKey.c in Sources */,
 				F036E6B52BC68E2900A78829 /* ForeignLinkerSupport.c in Sources */,
@@ -1120,9 +1120,12 @@
 					MACOSX,
 					NSS_ECC_MORE_THAN_SUITE_B,
 					"ARCHPROPNAME='\"$(CURRENT_ARCH)\"'",
+					"VERSION_STRING='\"$(JDK_VERSION_STRING)\"'",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(JDK_ROOT)/src/java.base/share/native/libjava",
+					"$(JDK_ROOT)/src/java.base/unix/native/libjava",
+					"$(JDK_ROOT)/src/java.base/macosx/native/libjava",
 					"$(JDK_ROOT)/src/hotspot/share/include",
 					"$(JDK_ROOT)/build/labsjdk/support/headers/java.base",
 					"$(JDK_ROOT)/build/labsjdk/jdk/include",
@@ -1131,6 +1134,8 @@
 				);
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					"$(JDK_ROOT)/src/java.base/share/native/libjava",
+					"$(JDK_ROOT)/src/java.base/unix/native/libjava",
+					"$(JDK_ROOT)/src/java.base/macosx/native/libjava",
 					"$(JDK_ROOT)/src/hotspot/share/include",
 					"$(JDK_ROOT)/build/labsjdk/support/headers/java.base",
 					"$(JDK_ROOT)/build/labsjdk/jdk/include",
@@ -1226,9 +1231,12 @@
 					MACOSX,
 					NSS_ECC_MORE_THAN_SUITE_B,
 					"ARCHPROPNAME='\"$(CURRENT_ARCH)\"'",
+					"VERSION_STRING='\"$(JDK_VERSION_STRING)\"'",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(JDK_ROOT)/src/java.base/share/native/libjava",
+					"$(JDK_ROOT)/src/java.base/unix/native/libjava",
+					"$(JDK_ROOT)/src/java.base/macosx/native/libjava",
 					"$(JDK_ROOT)/src/hotspot/share/include",
 					"$(JDK_ROOT)/build/labsjdk/support/headers/java.base",
 					"$(JDK_ROOT)/build/labsjdk/jdk/include",

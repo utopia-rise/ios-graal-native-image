@@ -41,6 +41,7 @@ git -C "$jdk_source" apply ../ios-jdk.patch
 pushd "$jdk_source" >/dev/null
 bash ./configure \
   --with-conf-name=labsjdk \
+  --disable-warnings-as-errors \
   --with-version-opt="$JVMCI_VERSION" \
   --with-version-pre= \
   --with-vendor-name="GraalVM Community" \
@@ -50,25 +51,46 @@ bash ./configure \
 make CONF_NAME=labsjdk graal-builder-image
 popd >/dev/null
 
-xcodebuild \
-  -project "$root_dir/labs-openjdk/svm.openjdk.xcodeproj" \
-  -target libjava \
-  -configuration Release-ios \
-  -sdk iphoneos \
-  ARCHS=arm64 \
-  IPHONEOS_DEPLOYMENT_TARGET="$IOS_MIN_VERSION" \
-  ONLY_ACTIVE_ARCH=NO \
-  build
+# ProcessImpl_md.c checks VERSION_STRING against the jspawnhelper it spawns,
+# so libjava has to be compiled with the same value the JDK build used.
+jdk_version_string="$(sed -n 's/^[[:space:]]*VERSION_STRING[[:space:]]*:*=[[:space:]]*//p' \
+  "$jdk_source/build/labsjdk/spec.gmk" | head -1)"
+if [ -z "$jdk_version_string" ]; then
+  echo "Could not read VERSION_STRING from $jdk_source/build/labsjdk/spec.gmk." >&2
+  exit 1
+fi
 
-xcodebuild \
-  -project "$root_dir/svm/svm.graal.xcodeproj" \
-  -target libjvm \
-  -configuration Release-ios \
-  -sdk iphoneos \
-  ARCHS=arm64 \
-  IPHONEOS_DEPLOYMENT_TARGET="$IOS_MIN_VERSION" \
-  ONLY_ACTIVE_ARCH=NO \
-  build
+# Release builds drop debug info: DWARF records the build machine's absolute
+# source paths, and the libjava single-object prelink turns every input object
+# into an N_OSO debug-map entry pointing at a path that cannot exist on a
+# consumer's machine, so their linker warns about each one. The debug variants
+# keep it, since that is the point of shipping them.
+build_archive() {
+  local project="$1"
+  local target="$2"
+  local configuration="$3"
+  local debug_symbols="$4"
+  shift 4
+  xcodebuild \
+    -project "$project" \
+    -target "$target" \
+    -configuration "$configuration" \
+    -sdk iphoneos \
+    ARCHS=arm64 \
+    IPHONEOS_DEPLOYMENT_TARGET="$IOS_MIN_VERSION" \
+    ONLY_ACTIVE_ARCH=NO \
+    GCC_GENERATE_DEBUGGING_SYMBOLS="$debug_symbols" \
+    "$@" \
+    build
+}
+
+openjdk_project="$root_dir/labs-openjdk/svm.openjdk.xcodeproj"
+graal_project="$root_dir/svm/svm.graal.xcodeproj"
+
+build_archive "$openjdk_project" libjava Release-ios NO "JDK_VERSION_STRING=$jdk_version_string"
+build_archive "$graal_project" libjvm Release-ios NO
+build_archive "$openjdk_project" libjava Debug-ios YES "JDK_VERSION_STRING=$jdk_version_string"
+build_archive "$graal_project" libjvm Debug-ios YES
 
 pushd "$root_dir/cap-cache-generator" >/dev/null
 ./gradlew generateCapCache -PgraalvmHome="$GRAALVM_HOME"

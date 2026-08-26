@@ -28,11 +28,6 @@ JNIEXPORT jobject JNICALL JVM_AreNestMates(JNIEnv *env) {
     return NULL;
 }
 
-JNIEXPORT jobject JNICALL JVM_ArrayCopy(JNIEnv *env) {
-    (*env)->FatalError(env, "JVM_ArrayCopy called:  Unimplemented");
-    return NULL;
-}
-
 JNIEXPORT jobject JNICALL JVM_AssertionStatusDirectives(JNIEnv *env) {
     (*env)->FatalError(env, "JVM_AssertionStatusDirectives called:  Unimplemented");
     return NULL;
@@ -133,6 +128,11 @@ JNIEXPORT jobject JNICALL JVM_ConstantPoolGetUTF8At(JNIEnv *env) {
     return NULL;
 }
 
+JNIEXPORT jobject JNICALL JVM_CreateThreadSnapshot(JNIEnv *env) {
+    (*env)->FatalError(env, "JVM_CreateThreadSnapshot called:  Unimplemented");
+    return NULL;
+}
+
 JNIEXPORT jobject JNICALL JVM_CurrentCarrierThread(JNIEnv *env) {
     (*env)->FatalError(env, "JVM_CurrentCarrierThread called:  Unimplemented");
     return NULL;
@@ -180,6 +180,11 @@ JNIEXPORT jobject JNICALL JVM_DumpThreads(JNIEnv *env) {
 
 JNIEXPORT jobject JNICALL JVM_EnsureMaterializedForStackWalk_func(JNIEnv *env) {
     (*env)->FatalError(env, "JVM_EnsureMaterializedForStackWalk_func called:  Unimplemented");
+    return NULL;
+}
+
+JNIEXPORT jobject JNICALL JVM_ExpandStackFrameInfo(JNIEnv *env) {
+    (*env)->FatalError(env, "JVM_ExpandStackFrameInfo called:  Unimplemented");
     return NULL;
 }
 
@@ -250,6 +255,11 @@ JNIEXPORT jobject JNICALL JVM_GetArrayElement(JNIEnv *env) {
 
 JNIEXPORT jobject JNICALL JVM_GetArrayLength(JNIEnv *env) {
     (*env)->FatalError(env, "JVM_GetArrayLength called:  Unimplemented");
+    return NULL;
+}
+
+JNIEXPORT jobject JNICALL JVM_GetCDSConfigStatus(JNIEnv *env) {
+    (*env)->FatalError(env, "JVM_GetCDSConfigStatus called:  Unimplemented");
     return NULL;
 }
 
@@ -758,6 +768,11 @@ JNIEXPORT void JNICALL JVM_NativePath() {
     abort();
 }
 
+JNIEXPORT jobject JNICALL JVM_NeedsClassInitBarrierForCDS(JNIEnv *env) {
+    (*env)->FatalError(env, "JVM_NeedsClassInitBarrierForCDS called:  Unimplemented");
+    return NULL;
+}
+
 JNIEXPORT jobject JNICALL JVM_NewArray(JNIEnv *env) {
     (*env)->FatalError(env, "JVM_NewArray called:  Unimplemented");
     return NULL;
@@ -898,6 +913,11 @@ JNIEXPORT jobject JNICALL JVM_Sleep(JNIEnv *env) {
     return NULL;
 }
 
+JNIEXPORT jobject JNICALL JVM_SleepNanos(JNIEnv *env) {
+    (*env)->FatalError(env, "JVM_SleepNanos called:  Unimplemented");
+    return NULL;
+}
+
 JNIEXPORT jobject JNICALL JVM_StartThread(JNIEnv *env) {
     (*env)->FatalError(env, "JVM_StartThread called:  Unimplemented");
     return NULL;
@@ -908,6 +928,11 @@ JNIEXPORT void JNICALL JVM_SupportsCX8() {
     abort();
 }
 
+JNIEXPORT jobject JNICALL JVM_TakeVirtualThreadListToUnblock(JNIEnv *env) {
+    (*env)->FatalError(env, "JVM_TakeVirtualThreadListToUnblock called:  Unimplemented");
+    return NULL;
+}
+
 JNIEXPORT void JNICALL JVM_TotalMemory() {
     fprintf(stderr, "JVM_TotalMemory called:  Unimplemented\n");
     abort();
@@ -916,6 +941,11 @@ JNIEXPORT void JNICALL JVM_TotalMemory() {
 JNIEXPORT void JNICALL JVM_UnloadLibrary() {
     fprintf(stderr, "JVM_UnloadLibrary called:  Unimplemented\n");
     abort();
+}
+
+JNIEXPORT jobject JNICALL JVM_VirtualThreadDisableSuspend(JNIEnv *env) {
+    (*env)->FatalError(env, "JVM_VirtualThreadDisableSuspend called:  Unimplemented");
+    return NULL;
 }
 
 JNIEXPORT jobject JNICALL JVM_VirtualThreadEnd(JNIEnv *env) {
@@ -930,6 +960,11 @@ JNIEXPORT jobject JNICALL JVM_VirtualThreadHideFrames(JNIEnv *env) {
 
 JNIEXPORT jobject JNICALL JVM_VirtualThreadMount(JNIEnv *env) {
     (*env)->FatalError(env, "JVM_VirtualThreadMount called:  Unimplemented");
+    return NULL;
+}
+
+JNIEXPORT jobject JNICALL JVM_VirtualThreadPinnedEvent(JNIEnv *env) {
+    (*env)->FatalError(env, "JVM_VirtualThreadPinnedEvent called:  Unimplemented");
     return NULL;
 }
 
