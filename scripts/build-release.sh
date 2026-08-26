@@ -39,7 +39,7 @@ git -C "$jdk_source" apply --check ../ios-jdk.patch
 git -C "$jdk_source" apply ../ios-jdk.patch
 
 pushd "$jdk_source" >/dev/null
-./configure \
+bash ./configure \
   --with-conf-name=labsjdk \
   --with-version-opt="$JVMCI_VERSION" \
   --with-version-pre= \
