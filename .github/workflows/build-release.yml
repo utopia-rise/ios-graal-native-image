@@ -1,6 +1,6 @@
 name: Build iOS Graal JDK 25
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       release_version:
