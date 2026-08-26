@@ -1,9 +1,9 @@
 plugins {
-    kotlin("jvm") version "1.9.21"
+    kotlin("jvm") version "2.3.20"
 }
 
 group = "com.utopia-rise"
-version = "1.0.0-SNAPSHOT"
+version = "25.0.4-ios.1"
 
 repositories {
     mavenCentral()
@@ -13,36 +13,45 @@ kotlin {
     jvmToolchain(17)
 }
 
+val graalVmHome = providers.gradleProperty("graalvmHome")
+    .orElse(providers.environmentVariable("GRAALVM_HOME"))
+
 tasks.register<Exec>("generateCapCache") {
     dependsOn(tasks.build)
     group = "graal-ios"
 
-    val graalVmNativeImage = File(System.getenv("GRAALVM_HOME"))
-        .resolve("bin")
-        .resolve("native-image")
-        .absolutePath
-
-    val libsDir = project.layout.buildDirectory.asFile.get().resolve("libs")
-    val iosLibDir = libsDir.resolve("ios")
-    iosLibDir.mkdirs()
+    val nativeImage = graalVmHome.map { File(it).resolve("bin").resolve("native-image") }
+    val capCacheDirectory = layout.buildDirectory.dir("cap-cache")
     val dummyJarFile = tasks.jar.get().outputs.files.files.first().absolutePath
 
-    val arguments = arrayOf(
-        graalVmNativeImage,
-        "-cp",
-        dummyJarFile,
-        "-H:+SharedLibrary",
-        "-H:Name=usercode",
-        "-H:PageSize=16384",
-        "-Dsvm.targetName=iOS",
-        "-Dsvm.targetArch=arm64",
-        "-H:+NewCAPCache",
-        "-H:+ExitAfterCAPCache",
-        "-H:CAPCacheDir=${iosLibDir.absolutePath}",
-        "-Dsvm.platform=org.graalvm.nativeimage.Platform\$IOS_AARCH64",
-    )
+    inputs.property("graalvmHome", graalVmHome)
+    inputs.file(dummyJarFile)
+    outputs.dir(capCacheDirectory)
 
-    println(arguments.joinToString(" "))
+    doFirst {
+        val nativeImageFile = nativeImage.get()
+        require(nativeImageFile.canExecute()) {
+            "GraalVM native-image executable was not found: ${nativeImageFile.absolutePath}"
+        }
 
-    commandLine(*arguments)
+        val outputDirectory = capCacheDirectory.get().asFile
+        outputDirectory.mkdirs()
+        val arguments = arrayOf(
+            nativeImageFile.absolutePath,
+            "-cp",
+            dummyJarFile,
+            "-H:+SharedLibrary",
+            "-H:Name=usercode",
+            "-H:PageSize=16384",
+            "-Dsvm.targetName=iOS",
+            "-Dsvm.targetArch=arm64",
+            "-H:+NewCAPCache",
+            "-H:+ExitAfterCAPCache",
+            "-H:CAPCacheDir=${outputDirectory.absolutePath}",
+            "-Dsvm.platform=org.graalvm.nativeimage.Platform\$IOS_AARCH64",
+        )
+
+        println(arguments.joinToString(" "))
+        commandLine(*arguments)
+    }
 }

@@ -1,30 +1,58 @@
-# How to build an iOS JDK
+# iOS Graal JDK 25
 
-First clone this repo with `--recurse-submodules` option.  
+This repository builds the unofficial iOS runtime required to compile JVM code with
+GraalVM Native Image for iOS/arm64. It combines the previously separate iOS JDK
+and CAP-cache projects into one versioned release unit.
 
-Then, you will need to apply `labs-openjdk/ios-jdk.patch` to `labs-openjdk-21` submodule.  
-Setup a boot jdk (it is a JDK used when building the ios JDK). You can set it up by fetching one or simply download
-GraalVM 23.1.3 and set your `JAVA_HOME` environment variable to it.  
-To fetch a boot JDK execute:  
-`mx -y --no-warning fetch-jdk --java-distribution labsjdk-ce-21 --to pathwhereyouwanttosetbootjdk --alias jdk21`.
-Then in `labs-openjdk-21` submodule run configure command:  
+## Contents
+
+- `labs-openjdk/labs-openjdk-25` is the JDK 25.0 JVMCI source submodule.
+- `svm/graal` is the matching GraalVM 25.0 source submodule.
+- `labs-openjdk/ios-jdk.patch` contains the iOS OpenJDK changes and applies to
+  the pinned JDK source revision.
+- `labs-openjdk/svm.openjdk.xcodeproj` builds `libjava.a`.
+- `svm/svm.graal.xcodeproj` builds `libjvm.a`.
+- `cap-cache-generator` produces the iOS CAP cache using the same GraalVM.
+
+The project intentionally produces static archives and CAP cache data only. It
+does not claim official GraalVM iOS support.
+
+## Build a release bundle
+
+Build on macOS with Xcode and a GraalVM 25.0.4 JDK that includes
+`native-image`:
+
+```bash
+git clone --recurse-submodules <repository-url>
+cd ios-graal-jdk-25
+export GRAALVM_HOME=/path/to/graalvm-jdk-25
+./scripts/build-release.sh
 ```
-./configure
-    --with-conf-name=labsjdk
-    --with-version-opt=jvmci-23.1.3-b33
-    --with-version-pre=
-    --with-vendor-name="GraalVM Community"
-    --with-vendor-url=https://www.graalvm.org/
-    --with-vendor-bug-url=https://github.com/oracle/graal/issues
-    --with-vendor-vm-bug-url=https://github.com/oracle/graal/issues
+
+The final assets are written to `dist/`:
+
+```text
+libjava-release.a
+libjvm-release.a
+*.cap
+SHA256SUMS
+manifest.json
 ```
-Then run `make CONF_NAME=labsjdk graal-builder-image`.  
-Once done, it should have generated all sources and headers needed to compile java static library for iOS.  
-To compile java static library for iOS open `svm.openjdk.xcodeproj` and compile static library.  
-When compiled you should have `libjava.a` ios static library in xcode build output folder.  
 
-Then you will have to build SVM static library.  
-To do so open `svm.graal.xcodeproj` and compile it for iOS.  
-When done, you should have a `libjvm.a` static library in xcode project build output folder.  
+Upload every file in `dist/` to one GitHub release. The Gradle plugin should
+download `libjava-release.a`, `libjvm-release.a`, and the CAP files from that
+single release tag.
 
-You can then include both `libjava.a` and `libjvm.a` static libraries in your native app to enable java for your iOS app.
+## GitHub Actions
+
+Run **Build iOS Graal JDK 25** manually from the Actions tab. It builds the
+same `dist/` directory and uploads it as a workflow artifact named
+`ios-graal-jdk-<release version>`. The workflow deliberately does not create a
+GitHub release or publish assets.
+
+Before changing either source submodule, update `toolchain.env`, port
+`labs-openjdk/ios-jdk.patch`, and validate it with:
+
+```bash
+./scripts/verify.sh
+```
