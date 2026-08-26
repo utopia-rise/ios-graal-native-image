@@ -29,6 +29,9 @@ jobs:
           distribution: graalvm
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install OpenJDK build prerequisites
+        run: brew install autoconf
+
       - name: Build release assets
         env:
           GRAALVM_HOME: ${{ env.JAVA_HOME }}
