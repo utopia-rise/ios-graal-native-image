@@ -1,0 +1,87 @@
+name: Build iOS Graal JDK 25
+
+"on":
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: Version to attach to the downloadable workflow artifact.
+        required: true
+        default: jdk25
+        type: string
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 1
+          submodules: false
+
+      - name: Initialize pinned source submodules
+        run: git submodule update --init --recursive --depth 1
+
+      - name: Record source revisions
+        id: source-revisions
+        run: echo "key=$(git submodule status | shasum -a 256 | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+
+      # Read from toolchain.env so the GraalVM here cannot drift from the one the
+      # static libraries and the CAP cache are built against.
+      - name: Read toolchain versions
+        id: toolchain
+        run: |
+          . ./toolchain.env
+          echo "graalvm=$GRAALVM_VERSION" >> "$GITHUB_OUTPUT"
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          version: ${{ steps.toolchain.outputs.graalvm }}
+          distribution: graalvm
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          cache: gradle
+
+      - name: Restore native build cache
+        uses: actions/cache@v5.0.5
+        with:
+          path: |
+            labs-openjdk/labs-openjdk-25/build/labsjdk
+            labs-openjdk/build/xcode
+            svm/build/xcode
+            cap-cache-generator/.gradle
+            cap-cache-generator/build/cap-cache
+          key: ios-graal-native-image-${{ runner.os }}-${{ runner.arch }}-${{ steps.source-revisions.outputs.key }}-${{ hashFiles('toolchain.env', 'labs-openjdk/ios-jdk.patch', 'labs-openjdk/svm.openjdk.xcodeproj/project.pbxproj', 'svm/svm.graal.xcodeproj/project.pbxproj', 'cap-cache-generator/*.kts', 'cap-cache-generator/gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Install OpenJDK build prerequisites
+        run: brew install autoconf
+
+      - name: Build release assets
+        env:
+          GRAALVM_HOME: ${{ env.JAVA_HOME }}
+          RELEASE_VERSION: ${{ inputs.release_version || github.ref_name }}
+        run: ./scripts/build-release.sh
+
+      - name: Verify release bundle
+        run: |
+          unzip -t dist/*.zip
+          mkdir bundle
+          unzip -q dist/*.zip -d bundle
+          cd bundle && shasum -a 256 -c SHA256SUMS
+
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          path: dist/*.zip
+          archive: false
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ github.ref_name }}
+        run: gh release create "$RELEASE_VERSION" "dist/ios-graal-$RELEASE_VERSION.zip" --title "$RELEASE_VERSION"
