@@ -21,13 +21,33 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
-          submodules: recursive
+          fetch-depth: 1
+          submodules: false
+
+      - name: Initialize pinned source submodules
+        run: git submodule update --init --recursive --depth 1
+
+      - name: Record source revisions
+        id: source-revisions
+        run: echo "key=$(git submodule status | shasum -a 256 | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
 
       - uses: graalvm/setup-graalvm@v1
         with:
           version: 25.0.4
           distribution: graalvm
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          cache: gradle
+
+      - name: Restore native build cache
+        uses: actions/cache@v5.0.5
+        with:
+          path: |
+            labs-openjdk/labs-openjdk-25/build/labsjdk
+            labs-openjdk/svm.openjdk.xcodeproj/build
+            svm/svm.graal.xcodeproj/build
+            cap-cache-generator/.gradle
+            cap-cache-generator/build/cap-cache
+          key: ios-graal-native-image-${{ runner.os }}-${{ runner.arch }}-${{ steps.source-revisions.outputs.key }}-${{ hashFiles('toolchain.env', 'labs-openjdk/ios-jdk.patch', 'labs-openjdk/svm.openjdk.xcodeproj/project.pbxproj', 'svm/svm.graal.xcodeproj/project.pbxproj', 'cap-cache-generator/*.kts', 'cap-cache-generator/gradle/wrapper/gradle-wrapper.properties') }}
 
       - name: Install OpenJDK build prerequisites
         run: brew install autoconf

@@ -32,7 +32,7 @@ export JAVA_HOME="$GRAALVM_HOME"
 export GRAALVM_HOME
 
 cd "$root_dir"
-git submodule update --init --recursive
+git submodule update --init --recursive --depth 1
 
 jdk_source="$root_dir/labs-openjdk/labs-openjdk-$JDK_VERSION"
 git -C "$jdk_source" apply --check ../ios-jdk.patch

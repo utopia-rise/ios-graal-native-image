@@ -74,6 +74,11 @@ The source inputs are pinned in `.gitmodules`:
 deployment, and default release versions. `labs-openjdk/ios-jdk.patch` is
 applied to the pinned JDK source before it is built.
 
+The source submodules are Git links to exact commits, not floating branches.
+CI fetches those commits shallowly, without their full history. The expensive
+OpenJDK native build output and Gradle/CAP task state are cached only when those
+source revisions and their relevant build inputs match.
+
 Build on macOS with Xcode and a GraalVM 25.0.4 JDK that includes
 `native-image`:
 

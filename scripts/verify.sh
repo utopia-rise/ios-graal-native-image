@@ -26,6 +26,11 @@ grep -q 'runs-on: macos-26' "$workflow"
 grep -q 'actions/checkout@v7.0.1' "$workflow"
 grep -q 'graalvm/setup-graalvm@v1' "$workflow"
 grep -q 'actions/upload-artifact@v7.0.1' "$workflow"
+grep -q 'actions/cache@v5.0.5' "$workflow"
+grep -q 'submodules: false' "$workflow"
+grep -q 'git submodule update --init --recursive --depth 1' "$workflow"
+grep -q 'cache: gradle' "$workflow"
+grep -q 'git submodule update --init --recursive --depth 1' "$root_dir/scripts/build-release.sh"
 grep -q 'archive: false' "$workflow"
 if ! grep -q "if: github.event_name == 'push'" "$workflow"; then
   echo "Only tag pushes may create a GitHub release." >&2
