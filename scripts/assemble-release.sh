@@ -2,6 +2,9 @@
 set -euo pipefail
 
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck source=../toolchain.env
+source "$root_dir/toolchain.env"
+: "${RELEASE_VERSION:=$DEFAULT_RELEASE_VERSION}"
 dist_dir="$root_dir/dist"
 rm -rf "$dist_dir"
 mkdir -p "$dist_dir"
@@ -53,6 +56,7 @@ artifact_json="${artifact_json%, }"
 
 cat > "$dist_dir/manifest.json" <<EOF
 {
+  "releaseVersion": "$RELEASE_VERSION",
   "jdkVersion": "25",
   "graalVmVersion": "$(grep '^GRAALVM_VERSION=' "$root_dir/toolchain.env" | cut -d= -f2)",
   "labsOpenJdkCommit": "$(git -C "$root_dir/labs-openjdk/labs-openjdk-25" rev-parse HEAD)",

@@ -5,6 +5,13 @@ root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # shellcheck source=../toolchain.env
 source "$root_dir/toolchain.env"
 
+: "${RELEASE_VERSION:=$DEFAULT_RELEASE_VERSION}"
+if [[ ! "$RELEASE_VERSION" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]; then
+  echo "RELEASE_VERSION must contain only letters, numbers, dots, underscores, and hyphens." >&2
+  exit 1
+fi
+export RELEASE_VERSION
+
 if [[ "$(uname -s)" != "Darwin" ]]; then
   echo "An iOS toolchain release must be built on macOS." >&2
   exit 1

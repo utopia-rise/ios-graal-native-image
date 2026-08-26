@@ -40,9 +40,11 @@ SHA256SUMS
 manifest.json
 ```
 
-Upload every file in `dist/` to one GitHub release. The Gradle plugin should
-download `libjava-release.a`, `libjvm-release.a`, `cap-cache-files.txt`, and
-the CAP files named by that list from that single release tag.
+Upload every file in `dist/` to one GitHub release whose tag is the
+`releaseVersion` in `manifest.json` (by default, `25.0.4-ios.1`). The Gradle
+plugin should download `libjava-release.a`, `libjvm-release.a`,
+`cap-cache-files.txt`, and the CAP files named by that list from that single
+release tag.
 
 ## GitHub Actions
 

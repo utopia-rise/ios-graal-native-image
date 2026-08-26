@@ -6,6 +6,7 @@ root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$root_dir/toolchain.env"
 
 test "$JDK_VERSION" = "25"
+test "$DEFAULT_RELEASE_VERSION" = "25.0.4-ios.1"
 test -f "$root_dir/labs-openjdk/ios-jdk.patch"
 test -f "$root_dir/cap-cache-generator/build.gradle.kts"
 test -f "$root_dir/.github/workflows/build-release.yml"
