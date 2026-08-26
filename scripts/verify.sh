@@ -19,12 +19,15 @@ done
 
 grep -q 'cap-cache-files.txt' "$root_dir/scripts/assemble-release.sh"
 grep -q 'manifest.json' "$root_dir/scripts/assemble-release.sh"
+grep -q 'zip -X' "$root_dir/scripts/assemble-release.sh"
 grep -q 'workflow_dispatch:' "$workflow"
+grep -q 'push:' "$workflow"
 grep -q 'runs-on: macos-26' "$workflow"
 grep -q 'actions/checkout@v7.0.1' "$workflow"
 grep -q 'graalvm/setup-graalvm@v1' "$workflow"
 grep -q 'actions/upload-artifact@v7.0.1' "$workflow"
-if grep -Eq 'gh release|create-release|action-gh-release' "$workflow"; then
-  echo "The workflow must not publish a GitHub release." >&2
+grep -q 'archive: false' "$workflow"
+if ! grep -q "if: github.event_name == 'push'" "$workflow"; then
+  echo "Only tag pushes may create a GitHub release." >&2
   exit 1
 fi

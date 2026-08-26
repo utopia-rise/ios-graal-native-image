@@ -13,13 +13,15 @@ The result is not an iOS app and is not a normal JDK installation. It is a
 small toolchain bundle that the Godot-JVM Gradle plugin downloads before it
 turns a user's JVM code into an iOS native library.
 
-The bundle contains:
+The downloadable bundle is one ZIP file named
+`ios-graal-jdk-<release-version>.zip`. Its contents are:
 
 ```text
 libjava-release.a
 libjvm-release.a
-*.cap
-cap-cache-files.txt
+caps/
+  *.cap
+  cap-cache-files.txt
 SHA256SUMS
 manifest.json
 ```
@@ -93,17 +95,21 @@ The script performs this sequence:
    dynamic index, checksums, and manifest.
 
 The CAP filenames are deliberately discovered from the generated output and
-listed in `cap-cache-files.txt`; consumers must not maintain a hard-coded list.
-For a future GitHub Release, upload every file from `dist/` to one release whose
-tag equals `manifest.json`'s `releaseVersion` (default `25.0.4-ios.1`). The
-Gradle plugin must download the two archives, the CAP index, and every CAP file
-named by that index from that same release.
+listed in `caps/cap-cache-files.txt`; consumers must not maintain a hard-coded
+list. A future Gradle plugin downloads this one ZIP, verifies it using
+`SHA256SUMS`, then extracts the two archives and the `caps/` directory.
 
-The included GitHub workflow runs only when started manually from the Actions
-tab. Its `release_version` text field defaults to `25.0.4-ios.1`; the chosen
-value becomes both the downloadable workflow artifact name and the bundle's
-`releaseVersion`. The workflow uploads `dist/` as an artifact but never creates
-or publishes a GitHub Release.
+The included GitHub workflow has two entry points:
+
+- Running it manually from the Actions tab builds and uploads the already-ZIPed
+  bundle as a workflow artifact. `archive: false` prevents GitHub from wrapping
+  that ZIP inside a second ZIP.
+- Pushing a tag builds the same ZIP, creates a GitHub Release named after that
+  tag, and uploads that exact ZIP as its sole release asset. The tag becomes the
+  bundle's `releaseVersion`.
+
+No current release is created by these files alone: a release is only published
+when somebody pushes a tag to GitHub.
 
 Before changing either source submodule, update `toolchain.env`, port
 `labs-openjdk/ios-jdk.patch`, then run:

@@ -6,8 +6,10 @@ root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$root_dir/toolchain.env"
 : "${RELEASE_VERSION:=$DEFAULT_RELEASE_VERSION}"
 dist_dir="$root_dir/dist"
+bundle_name="ios-graal-jdk-$RELEASE_VERSION.zip"
+bundle_dir="$dist_dir/bundle"
 rm -rf "$dist_dir"
-mkdir -p "$dist_dir"
+mkdir -p "$bundle_dir/caps"
 
 copy_archive() {
   local source_root="$1"
@@ -19,7 +21,7 @@ copy_archive() {
     echo "Could not find $source_name below $source_root." >&2
     exit 1
   fi
-  cp "$source" "$dist_dir/$target_name"
+  cp "$source" "$bundle_dir/$target_name"
 }
 
 copy_archive "$root_dir/labs-openjdk/svm.openjdk.xcodeproj/build" libjava.a libjava-release.a
@@ -37,12 +39,15 @@ if (( ${#cap_files[@]} == 0 )); then
 fi
 
 for cap_file in "${cap_files[@]}"; do
-  cp "$cap_dir/$cap_file" "$dist_dir/$cap_file"
+  cp "$cap_dir/$cap_file" "$bundle_dir/caps/$cap_file"
 done
 
-printf '%s\n' "${cap_files[@]}" > "$dist_dir/cap-cache-files.txt"
+printf '%s\n' "${cap_files[@]}" > "$bundle_dir/caps/cap-cache-files.txt"
 
-artifact_names=(libjava-release.a libjvm-release.a "${cap_files[@]}")
+artifact_names=(libjava-release.a libjvm-release.a)
+for cap_file in "${cap_files[@]}"; do
+  artifact_names+=("caps/$cap_file")
+done
 artifact_json=""
 for artifact_name in "${artifact_names[@]}"; do
   artifact_json+="\"$artifact_name\", "
@@ -50,11 +55,11 @@ done
 artifact_json="${artifact_json%, }"
 
 (
-  cd "$dist_dir"
-  shasum -a 256 libjava-release.a libjvm-release.a cap-cache-files.txt "${cap_files[@]}" > SHA256SUMS
+  cd "$bundle_dir"
+  shasum -a 256 libjava-release.a libjvm-release.a caps/cap-cache-files.txt "${artifact_names[@]:2}" > SHA256SUMS
 )
 
-cat > "$dist_dir/manifest.json" <<EOF
+cat > "$bundle_dir/manifest.json" <<EOF
 {
   "releaseVersion": "$RELEASE_VERSION",
   "jdkVersion": "25",
@@ -62,6 +67,13 @@ cat > "$dist_dir/manifest.json" <<EOF
   "labsOpenJdkCommit": "$(git -C "$root_dir/labs-openjdk/labs-openjdk-25" rev-parse HEAD)",
   "graalCommit": "$(git -C "$root_dir/svm/graal" rev-parse HEAD)",
   "artifacts": [$artifact_json],
+  "capCacheIndex": "caps/cap-cache-files.txt",
   "sha256": "SHA256SUMS"
 }
 EOF
+
+(
+  cd "$bundle_dir"
+  zip -X -q -r "$dist_dir/$bundle_name" libjava-release.a libjvm-release.a caps SHA256SUMS manifest.json
+)
+rm -rf "$bundle_dir"
