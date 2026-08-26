@@ -14,13 +14,13 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
 
-      - uses: graalvm/setup-graalvm@v1
+      - uses: graalvm/setup-graalvm@5298d94fb55a4f185c602eeac5de1b553882abe2 # v1
         with:
           version: 25.0.4
           distribution: graalvm
@@ -35,7 +35,7 @@ jobs:
       - name: Verify release asset checksums
         run: cd dist && shasum -a 256 -c SHA256SUMS
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ios-graal-jdk-${{ inputs.release_version }}
           path: dist/
