@@ -23,25 +23,21 @@ copy_archive "$root_dir/labs-openjdk/svm.openjdk.xcodeproj/build" libjava.a libj
 copy_archive "$root_dir/svm/svm.graal.xcodeproj/build" libjvm.a libjvm-release.a
 
 cap_dir="$root_dir/cap-cache-generator/build/cap-cache"
-cap_files=(
-  AArch64LibCHelperDirectives.cap
-  AMD64LibCHelperDirectives.cap
-  BuiltinDirectives.cap
-  JNIHeaderDirectives.cap
-  JNIHeaderDirectivesJDK19OrLater.cap
-  JNIHeaderDirectivesJDK20OrLater.cap
-  JNIHeaderDirectivesJDK21OrLater.cap
-  PosixDirectives.cap
-  RISCV64LibCHelperDirectives.cap
-)
+cap_files=()
+while IFS= read -r cap_file; do
+  cap_files+=("$cap_file")
+done < <(find "$cap_dir" -maxdepth 1 -type f -name '[A-Za-z0-9]*.cap' -exec basename {} \; | LC_ALL=C sort)
+
+if (( ${#cap_files[@]} == 0 )); then
+  echo "No CAP cache files were generated below $cap_dir." >&2
+  exit 1
+fi
 
 for cap_file in "${cap_files[@]}"; do
-  if [[ ! -f "$cap_dir/$cap_file" ]]; then
-    echo "Missing CAP cache file: $cap_file" >&2
-    exit 1
-  fi
   cp "$cap_dir/$cap_file" "$dist_dir/$cap_file"
 done
+
+printf '%s\n' "${cap_files[@]}" > "$dist_dir/cap-cache-files.txt"
 
 artifact_names=(libjava-release.a libjvm-release.a "${cap_files[@]}")
 artifact_json=""
@@ -52,7 +48,7 @@ artifact_json="${artifact_json%, }"
 
 (
   cd "$dist_dir"
-  shasum -a 256 libjava-release.a libjvm-release.a "${cap_files[@]}" > SHA256SUMS
+  shasum -a 256 libjava-release.a libjvm-release.a cap-cache-files.txt "${cap_files[@]}" > SHA256SUMS
 )
 
 cat > "$dist_dir/manifest.json" <<EOF

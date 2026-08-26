@@ -14,3 +14,5 @@ git -C "$root_dir/labs-openjdk/labs-openjdk-25" apply --check ../ios-jdk.patch
 for name in libjava-release.a libjvm-release.a; do
   grep -q "$name" "$root_dir/scripts/assemble-release.sh"
 done
+
+grep -q 'cap-cache-files.txt' "$root_dir/scripts/assemble-release.sh"

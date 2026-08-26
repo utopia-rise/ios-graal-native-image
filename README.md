@@ -35,13 +35,14 @@ The final assets are written to `dist/`:
 libjava-release.a
 libjvm-release.a
 *.cap
+cap-cache-files.txt
 SHA256SUMS
 manifest.json
 ```
 
 Upload every file in `dist/` to one GitHub release. The Gradle plugin should
-download `libjava-release.a`, `libjvm-release.a`, and the CAP files from that
-single release tag.
+download `libjava-release.a`, `libjvm-release.a`, `cap-cache-files.txt`, and
+the CAP files named by that list from that single release tag.
 
 ## GitHub Actions
 
