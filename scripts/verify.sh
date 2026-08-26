@@ -9,7 +9,8 @@ test "$JDK_VERSION" = "25"
 test "$DEFAULT_RELEASE_VERSION" = "25.0.4-ios.1"
 test -f "$root_dir/labs-openjdk/ios-jdk.patch"
 test -f "$root_dir/cap-cache-generator/build.gradle.kts"
-test -f "$root_dir/.github/workflows/build-release.yml"
+workflow="$root_dir/.github/workflows/build-release.yml"
+test -f "$workflow"
 git -C "$root_dir/labs-openjdk/labs-openjdk-25" apply --check ../ios-jdk.patch
 
 for name in libjava-release.a libjvm-release.a; do
@@ -17,3 +18,10 @@ for name in libjava-release.a libjvm-release.a; do
 done
 
 grep -q 'cap-cache-files.txt' "$root_dir/scripts/assemble-release.sh"
+grep -q 'manifest.json' "$root_dir/scripts/assemble-release.sh"
+grep -q 'workflow_dispatch:' "$workflow"
+grep -q 'actions/upload-artifact@v4' "$workflow"
+if grep -Eq 'gh release|create-release|action-gh-release' "$workflow"; then
+  echo "The workflow must not publish a GitHub release." >&2
+  exit 1
+fi
